@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cppbuild",
+      "label": "C/C++: clang build active file",
+      "command": "/usr/bin/clang",
+      "args": [
+        "-std=c++17",
+        "-fcolor-diagnostics",
+        "-fansi-escape-codes",
+        "-g",
+        "-stdlib=libc++",
+        "-lc++", // Добавленный флаг
+        "${workspaceFolder}/model/main.cpp",
+        "${workspaceFolder}/model/stack.cpp",
+        "${workspaceFolder}/model/calculator.cpp",
+        "-o",
+        "${workspaceFolder}/output" // Имя выходного файла (можно изменить на любое)
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
