@@ -37,12 +37,15 @@ std::shared_ptr<Node> Stack::pop_head() {
 std::shared_ptr<Node> Stack::pop_tail() {
     if (!tail) return nullptr;
     auto temp = tail;
-    tail = tail->prev;
+    // Преобразование weak_ptr в shared_ptr перед использованием
+    auto prevNode = temp->prev.lock();
+    tail = prevNode;
     if (tail) {
-        tail->next.reset();
+        tail->next.reset();  // Отсоединяем последний элемент от предыдущего
     } else {
-        head.reset();
+        head.reset();  // Если в стеке больше нет элементов, сбрасываем head
     }
+    temp->prev.reset();  // Обязательно отсоединяем temp от предыдущего узла
     return temp;
 }
 

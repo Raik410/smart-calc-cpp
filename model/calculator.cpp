@@ -171,13 +171,15 @@ std::shared_ptr<Node> Calculator::sharting_yard() {
             }
         }
 
-        current = current->prev;
+        current = (current->prev).lock(); //
     }
 
     while (!supportStack.isEmpty()) {
         auto node = supportStack.pop_tail();
         outputStack.push_right(node->data, node->type, node->priority);
     }
+
+    supportStack.clear_stack();
 
     return outputStack.head;
 }
@@ -214,6 +216,9 @@ double Calculator::calc_sharting_yard() {
     }
 
     result = calculationStack.pop_head()->data;
+    
+    calculationStack.clear_stack();
+
     return result;
 }
 

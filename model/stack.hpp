@@ -24,7 +24,7 @@ public:
     Type type;
     Priority priority;
     std::shared_ptr<Node> next;
-    std::shared_ptr<Node> prev;
+    std::weak_ptr<Node> prev;
 
     Node(double d, Type t, Priority p) : data(d), type(t), priority(p) {}
 };
