@@ -1,5 +1,7 @@
 #include "calculator.hpp"
 
+using namespace s21;
+
 double Calculator::parser(const std::string& expression_str, double x_value) {
     if (!check_valid_brackets(expression_str)) {
         std::cout << "Use valid brackets.\n";
@@ -10,12 +12,12 @@ double Calculator::parser(const std::string& expression_str, double x_value) {
     double result = 0.0;
 
     for (size_t i = 0; i <= expression_str_length; i++) {
-        parse_arithmetic(stack.head, stack.tail, expression_str, i, x_value);
-        parse_trigonometry(stack.head, stack.tail, expression_str, i);
+        parse_arithmetic(expression_str, i, x_value);
+        parse_trigonometry(expression_str, i);
     }
 
-    stack.head = sharting_yard(stack.head, stack.tail);
-    result = calc_sharting_yard(stack.head);
+    stack.head = sharting_yard();
+    result = calc_sharting_yard();
 
     stack.clear_stack();
 
@@ -38,7 +40,7 @@ bool Calculator::check_valid_brackets(const std::string& expression_str) {
     return localStack.isEmpty();
 }
 
-void Calculator::parse_arithmetic(std::shared_ptr<Node>& head, std::shared_ptr<Node>& tail, const std::string& expression, size_t& index, double x_value) {
+void Calculator::parse_arithmetic (const std::string& expression, size_t& index, double x_value) {
     double value = 0.0;
 
     switch (expression[index]) {
@@ -85,7 +87,7 @@ void Calculator::parse_arithmetic(std::shared_ptr<Node>& head, std::shared_ptr<N
     }
 }
 
-void Calculator::parse_trigonometry(std::shared_ptr<Node>& head, std::shared_ptr<Node>& tail, const std::string& expression, size_t& index) {
+void Calculator::parse_trigonometry(const std::string& expression, size_t& index) {
     switch (expression[index]) {
         case 's':
             if (expression.substr(index, 3) == "sin") {
@@ -140,15 +142,15 @@ void Calculator::append_number(const std::string& expression, size_t& index, dou
     index += next_index - 1;
 }
 
-std::shared_ptr<Node> Calculator::sharting_yard(std::shared_ptr<Node> head, std::shared_ptr<Node> tail) {
+std::shared_ptr<Node> Calculator::sharting_yard() {
     Stack supportStack;
     Stack outputStack;
-    std::shared_ptr<Node> current = tail;
+    std::shared_ptr<Node> current = stack.tail;
 
     while (current != nullptr) {
-        if (current->type == Type::NUMBER) {
+        if (current->type == Type::NUMBER || current->type == Type::X) {
             outputStack.push_right(current->data, current->type, current->priority);
-        } else if (current->type == Type::LEFT_BRACKET || all_trigonometry_operation(current)) {
+        } else if (current->type == Type::LEFT_BRACKET || all_trigonometry_operation(current) || Type::UNARY_MINUS == current->type) {
             supportStack.push_right(current->data, current->type, current->priority);
         } else if (all_arithmetic_operation(current)) {
             while (!supportStack.isEmpty() && current->priority <= supportStack.peek_right()->priority && current->type != Type::POW) {
@@ -188,9 +190,9 @@ bool Calculator::all_trigonometry_operation(std::shared_ptr<Node> node) {
     return (node->type >= Type::COS && node->type <= Type::LOG);
 }
 
-double Calculator::calc_sharting_yard(std::shared_ptr<Node> head) {
+double Calculator::calc_sharting_yard() {
     Stack calculationStack;
-    std::shared_ptr<Node> current = head;
+    std::shared_ptr<Node> current = stack.head;
     double a = 0, b = 0, c = 0, result = 0;
 
     while (current != nullptr) {
@@ -198,6 +200,10 @@ double Calculator::calc_sharting_yard(std::shared_ptr<Node> head) {
             calculationStack.push_right(current->data, current->type, current->priority);
         } else if (current->type >= Type::PLUS && current->type <= Type::MOD) {
             b = calculationStack.pop_tail()->data;
+            if (calculationStack.isEmpty()) {
+                result = 0;
+                return result;
+            }
             a = calculationStack.pop_tail()->data;
             arithmetic_calculation(calculationStack, current, result, a, b);
         } else if ((current->type >= Type::COS && current->type <= Type::LOG) || current->type == Type::UNARY_MINUS) {

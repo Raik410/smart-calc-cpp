@@ -1,4 +1,5 @@
 #include "calculator.hpp"
+#include "../controller/calculator.controller.hpp"
 
 int main() {
     // Stack stack;
@@ -29,15 +30,22 @@ int main() {
     // stack.clear_stack();
     // stack.printStack();
 
-    Calculator calc;
+    // Calculator calc;
 
-    std::string expression_str = "1 + 1 * 15 / 30 + cos(5)";
+    // std::string expression_str = "yebal228/23////";
+    
+    // double x = 0;
 
-    double x = 0;
+    // double result = calc.parser(expression_str, x);
 
-    double result = calc.parser(expression_str, x);
+    // std::cout << "Result " << result;
 
-    std::cout << "Result " << result;
+    // return 0;
+
+    CalculatorController CalculatorController;
+    std::string input = "2^-3+0.875";
+    double result = CalculatorController.calculateExpression(input, 0);
+    // EXPECT_NEAR(result, 1, 1e-07);
 
     return 0;
 }

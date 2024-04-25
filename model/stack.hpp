@@ -16,6 +16,10 @@ enum class Priority {
 
 class Node {
 public:
+
+    Node() = default;
+    ~Node() = default;
+
     double data;
     Type type;
     Priority priority;
@@ -32,6 +36,7 @@ public:
     std::shared_ptr<Node> tail;
 
     Stack() : head(nullptr), tail(nullptr) {}
+     ~Stack() = default;
 
     void push_left(double data, Type type, Priority priority);
     void push_right(double data, Type type, Priority priority);
