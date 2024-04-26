@@ -1,19 +1,27 @@
-CC=g++ -std=c++17
+CC=g++ -std=c++17 -g
 GCOVR = $(shell which gcovr || echo "/usr/bin/gcovr")
-GOOGLE_TEST_FLAGS = -lgtest
+GOOGLE_TEST_FLAGS = -lgtest -lgtest_main -pthread
 GCOV_FLAGS = -fprofile-exclude-files='test/unit_tests.cpp'
 CPP_FILES = model/stack.cpp model/calculator.cpp model/credit.cpp model/validation.cpp
+OS = $(shell uname -s)
 
 all: install
 
 install:
+ifeq ($(shell uname -s),Darwin)
 	cd view && cmake --build . --target all
+	make open
+else
+	cd view && cmake .
+	cd view && cmake --build . --target all
+	make open
+endif
 
 install_package:
 	sudo apt-get install libvulkan-dev
 
-test: install
-	@$(CC) $(GCOV_FLAGS) --coverage $(GOOGLE_TEST_FLAGS) test/unit_tests.cpp model/stack.cpp model/calculator.cpp model/credit.cpp controller/calculator.controller.hpp
+test: clean
+	@$(CC) $(GCOV_FLAGS) --coverage test/unit_tests.cpp model/stack.cpp model/calculator.cpp model/credit.cpp controller/calculator.controller.hpp $(GOOGLE_TEST_FLAGS)
 	./a.out
 
 gcov_report: test
@@ -30,15 +38,15 @@ ifeq ($(shell uname -s),Darwin)
 	chmod +x view/calculator.app/Contents/MacOS/calculator
 	cd view/calculator.app/Contents/MacOS/ && ./calculator
 else
-	chmod +x view/build/calculator
-	cd view/build/ && ./calculator
+	chmod +x view/calculator
+	cd view/ && ./calculator
 endif
 
 uninstall:
 ifeq ($(shell uname -s),Darwin)
 	rm -rf view/calculator.app/
 else
-	rm -rf view/build/
+	rm -rf view/CMakeFiles/ view/cmake_install.cmake view/CMakeCache.txt view/calculator_autogen view/calculator view/Makefile
 endif
 
 clang-check:
@@ -62,6 +70,7 @@ clean:
 	@rm -f *.css *.html
 	@rm -f about.pdf about.log about.aux
 	@rm -f calculator.zip
+	make uninstall
 
 dist:
 	zip -r calculator.zip ../../C7_SmartCalc_v1.0-1/
