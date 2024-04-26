@@ -18,11 +18,11 @@ struct Credit_output {
 };
 
 class CreditCalculator {
-public:
+ public:
   CreditCalculator() = default;
   ~CreditCalculator() = default;
 
   Credit_output credit_calculator(const Credit_params& credit_params);
 };
 
-#endif // CREDIT_HPP
+#endif  // CREDIT_HPP

@@ -28,6 +28,63 @@ TEST(CalculationTest, Test2) {
     EXPECT_EQ((int)result, 5598726);
 }
 
+TEST(HiddenMulti, TestMulHidden) {
+    CalculatorController CalculatorController;
+    string input = "2(5)";
+    double result = CalculatorController.calculateExpression(input, 0);
+    EXPECT_EQ((int)result, 10);
+}
+
+TEST(XTest, Xtest) {
+    CalculatorController CalculatorController;
+    string input = "x+5";
+    double result = CalculatorController.calculateExpression(input, 5);
+    EXPECT_EQ((int)result, 10);
+}
+
+TEST(DivideByZero, ZeroDivide) {
+    CalculatorController calculatorController;
+    string input = "x/0";
+    EXPECT_THROW({
+        double result = calculatorController.calculateExpression(input, 5);
+    }, std::runtime_error);
+}
+
+TEST(CheckRigthBracket, RigthBracket) {
+    CalculatorController CalculatorController;
+    string input = ")";
+    double result = CalculatorController.calculateExpression(input, 0);
+    EXPECT_EQ((int)result, 1);
+}
+
+TEST(StringGarbadeTest, StringGarbade) {
+    CalculatorController CalculatorController;
+    string input = "acsotasoc228";
+    double result = CalculatorController.calculateExpression(input, 0);
+    EXPECT_EQ((int)result, 228);
+}
+
+TEST(UselessPlus, UselessPlus) {
+    CalculatorController CalculatorController;
+    string input = "+5";
+    double result = CalculatorController.calculateExpression(input, 0);
+    EXPECT_EQ((int)result, 5);
+}
+
+TEST(NotValidLog, LogTest) {
+    CalculatorController CalculatorController;
+    string input = "lo15";
+    double result = CalculatorController.calculateExpression(input, 0);
+    EXPECT_EQ((int)result, 15);
+}
+
+TEST(HardTest, HardTest) {
+    CalculatorController CalculatorController;
+    string input = "5+5/25^2+3-2-25+(-25)+sin(25)-cos(30)+tan(10)";
+    double result = CalculatorController.calculateExpression(input, 0);
+    EXPECT_NEAR(result, -43.6302423725, 1e-07);
+}
+
 TEST(CalculationTest, TestPercent) {
     CalculatorController CalculatorController;
     string input = "2%2";

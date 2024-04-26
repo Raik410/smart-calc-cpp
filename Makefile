@@ -1,7 +1,8 @@
 CC=g++ -std=c++17
 GCOVR = $(shell which gcovr || echo "/usr/bin/gcovr")
 GOOGLE_TEST_FLAGS = -lgtest
-GCOV_FLAGS = -fprofile-exclude-files=test/unit_tests.cpp -fprofile-arcs -ftest-coverage
+GCOV_FLAGS = -fprofile-exclude-files='test/unit_tests.cpp'
+CPP_FILES = model/stack.cpp model/calculator.cpp model/credit.cpp model/validation.cpp
 
 all: install
 
@@ -12,12 +13,12 @@ install_package:
 	sudo apt-get install libvulkan-dev
 
 test: install
-	@$(CC) --coverage $(GOOGLE_TEST_FLAGS) test/unit_tests.cpp model/stack.cpp model/calculator.cpp model/credit.cpp controller/calculator.controller.hpp
+	@$(CC) $(GCOV_FLAGS) --coverage $(GOOGLE_TEST_FLAGS) test/unit_tests.cpp model/stack.cpp model/calculator.cpp model/credit.cpp controller/calculator.controller.hpp
 	./a.out
 
 gcov_report: test
 	gcov test/unit_tests.cpp model/stack.cpp model/calculator.cpp
-	$(GCOVR) -r . --html --html-details -o calculator.html --exclude 'main\.cpp' --exclude 'tests/.*' --exclude 'stack.cpp'
+	$(GCOVR) -r . --html --html-details -o calculator.html --exclude 'model/main\.cpp' --exclude 'model/tests/.*' --exclude 'model/stack.cpp' --exclude 'model/stack.hpp' --exclude 'model/calculator.hpp' --exclude 'controller/calculator.controller.hpp'
 	make open-gcov
 
 open-gcov:
@@ -45,6 +46,14 @@ clang-check:
 
 clang:
 	clang-format -i ../src/**.c ../src/**.h calc_functions/*.c calc_functions/*.h unit_tests/*.c Qt_calculator/*.cpp Qt_calculator/*.c Qt_calculator/*.h
+
+check-format:
+	@echo "Checking code format..."
+	@find model controller -name '*.cpp' -or -name '*.hpp' | xargs clang-format -style=file -n
+
+code-format:
+	@echo "Format code..."
+	@find model controller -name '*.cpp' -or -name '*.hpp' | xargs clang-format -style=file -i
 
 clean:
 	@rm -rf *.o
